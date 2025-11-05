@@ -1,0 +1,60 @@
+# Nitzutz Mental Health App Environment Configuration
+# Copy this file to .env and add your actual API key
+
+# ========================================
+# GEMINI API CONFIGURATION (UPDATED 2025)
+# ========================================
+
+# Get your FREE API key from: https://aistudio.google.com/app/apikey
+REACT_APP_GEMINI_API_KEY=
+
+# Optional: Set to true to enable debug logging
+REACT_APP_DEBUG=true
+
+# ========================================
+# SETUP INSTRUCTIONS
+# ========================================
+
+# Step 1: Create .env file
+# - Create a new file named ".env" (no extension) in the root directory
+# - Or rename this file from 'env-example.txt' to '.env'
+
+# Step 2: Get your Gemini API key (FREE!)
+# 1. Go to: https://aistudio.google.com/app/apikey
+# 2. Sign in with your Google account
+# 3. Click "Get API Key" or "Create API Key in new project"
+# 4. Copy the generated key (starts with "AIza...")
+# 5. Paste it after REACT_APP_GEMINI_API_KEY= above
+
+# Step 3: Save and restart
+# - Save this file
+# - Stop your dev server (Ctrl+C)
+# - Start it again with: npm start
+# - Check the browser console for "✅ Gemini API configured"
+
+# ========================================
+# TROUBLESHOOTING
+# ========================================
+
+# If you see API errors:
+# 1. Make sure your API key is correct (no extra spaces)
+# 2. Check if you have internet connection
+# 3. Verify your API key hasn't been restricted in Google AI Studio
+# 4. Check the browser console (F12) for detailed error messages
+# 5. Make sure you have free quota available (60 requests/minute free tier)
+
+# Current API Details (as of October 2025):
+# - Endpoint: https://generativelanguage.googleapis.com/v1
+# - Model: gemini-2.5-flash (fastest & recommended)
+# - Alternative models: gemini-2.5-pro, gemini-2.0-flash
+# - Free tier: 60 requests per minute, 1500 requests per day
+# - NOTE: gemini-1.5-flash is DEPRECATED (returns 404 error)
+
+# Note: The app will work without an API key using fallback responses,
+# but the AI chat will be more limited and less personalized.
+
+# ========================================
+# SECURITY
+# ========================================
+# IMPORTANT: Never commit your .env file to GitHub or share it publicly!
+# The .env file should be listed in your .gitignore file.

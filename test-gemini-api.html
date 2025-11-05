@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini API Test Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+            color: #721c24;
+        }
+        .result.info {
+            background: #d1ecf1;
+            border: 2px solid #bee5eb;
+            color: #0c5460;
+        }
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .tip {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #856404;
+        }
+        .tip strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Gemini API Test Tool</h1>
+        <p class="subtitle">Test your Gemini API key before using it in the app</p>
+
+        <div class="input-group">
+            <label for="apiKey">Enter your Gemini API Key:</label>
+            <input 
+                type="password" 
+                id="apiKey" 
+                placeholder="AIzaSy..." 
+                autocomplete="off"
+            />
+        </div>
+
+        <button id="testBtn" onclick="testAPI()">Test API Key</button>
+
+        <div id="loading" class="loading" style="display:none;">
+            <div class="loading-spinner"></div>
+            <p style="margin-top: 10px; color: #666;">Testing your API key...</p>
+        </div>
+
+        <div id="result"></div>
+
+        <div class="tip">
+            <strong>💡 How to get your API key:</strong>
+            1. Go to <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a><br>
+            2. Sign in with your Google account<br>
+            3. Click "Get API Key" or "Create API Key in new project"<br>
+            4. Copy the key and paste it above
+        </div>
+    </div>
+
+    <script>
+        async function testAPI() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            const testBtn = document.getElementById('testBtn');
+
+            if (!apiKey) {
+                resultDiv.innerHTML = '<div class="result error">❌ Please enter an API key</div>';
+                return;
+            }
+
+            // Show loading
+            loadingDiv.style.display = 'block';
+            resultDiv.innerHTML = '';
+            testBtn.disabled = true;
+
+            try {
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            contents: [
+                                {
+                                    role: 'user',
+                                    parts: [
+                                        {
+                                            text: "Say 'Hello! API is working!' if you receive this message."
+                                        }
+                                    ]
+                                }
+                            ],
+                            generationConfig: {
+                                temperature: 0.9,
+                                topK: 40,
+                                topP: 0.95,
+                                maxOutputTokens: 100,
+                            }
+                        }),
+                    }
+                );
+
+                const data = await response.json();
+                
+                loadingDiv.style.display = 'none';
+                testBtn.disabled = false;
+
+                if (response.ok && data.candidates && data.candidates[0]) {
+                    const responseText = data.candidates[0].content.parts[0].text;
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <strong>✅ SUCCESS! Your API key is working!</strong><br><br>
+                            <strong>Response from Gemini:</strong><br>
+                            "${responseText}"<br><br>
+                            <strong>Next steps:</strong><br>
+                            1. Copy your API key<br>
+                            2. Open the <code>.env</code> file in your project root<br>
+                            3. Paste it after <code>REACT_APP_GEMINI_API_KEY=</code><br>
+                            4. Save and restart your dev server<br>
+                            5. Check browser console for "✅ Gemini API configured successfully!"
+                        </div>
+                    `;
+                } else if (response.status === 400) {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>❌ Bad Request (400)</strong><br><br>
+                            The API request format may be incorrect or the model name is invalid.<br><br>
+                            <strong>Error details:</strong>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else if (response.status === 403) {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>❌ Invalid API Key (403 Forbidden)</strong><br><br>
+                            Your API key is incorrect or doesn't have the required permissions.<br><br>
+                            <strong>Solutions:</strong><br>
+                            • Double-check you copied the entire key (starts with "AIza...")<br>
+                            • Make sure there are no extra spaces<br>
+                            • Try creating a new API key at <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a><br><br>
+                            <strong>Error details:</strong>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else if (response.status === 404) {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>❌ Model Not Found (404)</strong><br><br>
+                            The model "gemini-2.5-flash" was not found. This is unusual.<br><br>
+                            <strong>Available models as of Oct 2025:</strong><br>
+                            • gemini-2.5-flash (current)<br>
+                            • gemini-2.5-pro<br>
+                            • gemini-2.0-flash<br><br>
+                            <strong>Error details:</strong>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else if (response.status === 429) {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>⚠️ Rate Limit Exceeded (429)</strong><br><br>
+                            You've exceeded the API rate limit. Free tier allows:<br>
+                            • 60 requests per minute<br>
+                            • 1,500 requests per day<br><br>
+                            <strong>Solution:</strong> Wait a few seconds and try again.
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>❌ Error ${response.status}: ${response.statusText}</strong><br><br>
+                            <strong>Error details:</strong>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                testBtn.disabled = false;
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>❌ Network Error</strong><br><br>
+                        Could not connect to the Gemini API.<br><br>
+                        <strong>Possible causes:</strong><br>
+                        • No internet connection<br>
+                        • Firewall blocking the request<br>
+                        • CORS issues (try opening this file locally)<br><br>
+                        <strong>Error message:</strong>
+                        <pre>${error.message}</pre>
+                    </div>
+                `;
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('apiKey').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testAPI();
+            }
+        });
+    </script>
+</body>
+</html>
+
