@@ -1,8 +1,28 @@
-import React from 'react';
-import { BarChart3 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { BarChart3, Wifi, WifiOff } from 'lucide-react';
 import Logo from './Logo';
+import firebaseAuthService from '../services/firebaseAuth';
+import { auth } from '../config/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const Header = ({ onCrisisClick, onStatsClick }) => {
+  const [firebaseConnected, setFirebaseConnected] = useState(false);
+
+  useEffect(() => {
+    // Check Firebase connection status using auth state listener
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setFirebaseConnected(true);
+        console.log('🔍 Firebase Status Check: ✅ Connected (User:', user.uid.substring(0, 8) + '...)');
+      } else {
+        setFirebaseConnected(false);
+        console.log('🔍 Firebase Status Check: ❌ Not Connected');
+      }
+    });
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
+  }, []);
   return (
     <header className="px-4 py-4 flex items-center justify-between lg:px-6 lg:py-6 lg:relative lg:z-10 safe-area-top glass-dark backdrop-blur-md">
       {/* Logo and Brand */}
@@ -23,6 +43,28 @@ const Header = ({ onCrisisClick, onStatsClick }) => {
       
       {/* Action Buttons */}
       <div className="flex items-center space-x-3">
+        {/* Firebase Connection Status Indicator */}
+        <div 
+          className="hidden lg:flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium transition-all"
+          style={{
+            backgroundColor: firebaseConnected ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+            border: `1px solid ${firebaseConnected ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)'}`
+          }}
+          title={firebaseConnected ? 'Firebase connected - Data is being saved' : 'Firebase not connected - Using local storage only'}
+        >
+          {firebaseConnected ? (
+            <>
+              <Wifi size={14} className="text-green-400" />
+              <span className="text-green-300">Sync</span>
+            </>
+          ) : (
+            <>
+              <WifiOff size={14} className="text-red-400" />
+              <span className="text-red-300">Offline</span>
+            </>
+          )}
+        </div>
+
         {/* Stats Button */}
         <button
           onClick={onStatsClick}
