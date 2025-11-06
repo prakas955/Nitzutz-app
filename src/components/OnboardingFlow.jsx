@@ -91,7 +91,7 @@ const OnboardingFlow = ({ onComplete }) => {
     onComplete();
   };
 
-  const StepIcon = currentStepData.icon;
+  // StepIcon component is used inline in the JSX
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50 z-50 overflow-hidden">

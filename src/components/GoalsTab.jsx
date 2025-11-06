@@ -105,15 +105,15 @@ const GoalsTab = ({ userId }) => {
   };
 
   return (
-    <div className="p-4 pb-32 overflow-y-auto" style={{ backgroundColor: '#f7be4b', minHeight: '100vh' }}>
+    <div className="p-4 pb-32 overflow-y-auto relative" style={{ backgroundColor: '#f7be4b', minHeight: '100vh', maxHeight: 'calc(100vh - 200px)', touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}>
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold" style={{ color: '#0f343c' }}>My Goals</h2>
           <button
             onClick={exportGoals}
-            className="px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
-            style={{ backgroundColor: '#ffffff', color: '#0f343c', border: '2px solid #0f343c' }}
+            className="px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm cursor-pointer touch-manipulation active:scale-95"
+            style={{ backgroundColor: '#ffffff', color: '#0f343c', border: '2px solid #0f343c', minWidth: '44px', minHeight: '44px' }}
           >
             <Download size={16} />
             <span>Export</span>
@@ -128,8 +128,8 @@ const GoalsTab = ({ userId }) => {
       <div className="mb-6">
         <button
           onClick={() => setIsGoalFormOpen(true)}
-          className="w-full px-6 py-4 rounded-lg flex items-center justify-center space-x-3 transition-colors text-lg font-medium shadow-lg"
-          style={{ backgroundColor: '#0f343c', color: '#f7be4b' }}
+          className="w-full px-6 py-4 rounded-lg flex items-center justify-center space-x-3 transition-all text-lg font-medium shadow-lg cursor-pointer touch-manipulation active:scale-98"
+          style={{ backgroundColor: '#0f343c', color: '#f7be4b', minHeight: '56px' }}
         >
           <Plus size={24} />
           <span>Add New Goal</span>
@@ -144,8 +144,8 @@ const GoalsTab = ({ userId }) => {
           <p className="text-sm text-gray-400 mb-4">Start your journey by setting your first goal</p>
           <button
             onClick={() => setIsGoalFormOpen(true)}
-            className="px-6 py-3 rounded-lg text-white font-medium"
-            style={{ backgroundColor: '#0f343c' }}
+            className="px-6 py-3 rounded-lg text-white font-medium cursor-pointer touch-manipulation active:scale-95"
+            style={{ backgroundColor: '#0f343c', minHeight: '44px' }}
           >
             Create Your First Goal
           </button>

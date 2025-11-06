@@ -297,7 +297,7 @@ const PlanTab = () => {
   const weekCompletionRate = weekSteps.length > 0 ? (weekSteps.filter(step => step.completed).length / weekSteps.length) * 100 : 0;
 
   return (
-    <div className="p-4 pb-32 overflow-y-auto" style={{ backgroundColor: '#f7be4b', minHeight: '100vh' }}>
+    <div className="p-4 pb-32 overflow-y-auto relative" style={{ backgroundColor: '#f7be4b', minHeight: '100vh', maxHeight: 'calc(100vh - 200px)', touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}>
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
@@ -306,8 +306,8 @@ const PlanTab = () => {
           <div className="relative">
           <button
               onClick={() => setShowExportMenu(!showExportMenu)}
-              className="px-4 py-2 rounded-lg flex items-center space-x-2 transition-all text-sm font-semibold hover:shadow-lg"
-            style={{ backgroundColor: '#ffffff', color: '#0f343c', border: '2px solid #0f343c' }}
+              className="px-4 py-2 rounded-lg flex items-center space-x-2 transition-all text-sm font-semibold hover:shadow-lg cursor-pointer touch-manipulation active:scale-95"
+            style={{ backgroundColor: '#ffffff', color: '#0f343c', border: '2px solid #0f343c', minHeight: '44px' }}
           >
               <Download size={18} />
               <span>Export Plan</span>
@@ -330,7 +330,8 @@ const PlanTab = () => {
                     
                     <button
                       onClick={handleExportPDF}
-                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3 group"
+                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3 group cursor-pointer touch-manipulation active:scale-98"
+                      style={{ minHeight: '56px' }}
                     >
                       <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
                         <FileText size={20} className="text-white" />
@@ -347,7 +348,8 @@ const PlanTab = () => {
                     
                     <button
                       onClick={handleExportText}
-                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-green-50 transition-colors flex items-center space-x-3 group"
+                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-green-50 transition-colors flex items-center space-x-3 group cursor-pointer touch-manipulation active:scale-98"
+                      style={{ minHeight: '56px' }}
                     >
                       <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-lg flex items-center justify-center">
                         <FileDown size={20} className="text-white" />
@@ -364,7 +366,8 @@ const PlanTab = () => {
                     
                     <button
                       onClick={handleExportJSON}
-                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition-colors flex items-center space-x-3 group"
+                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition-colors flex items-center space-x-3 group cursor-pointer touch-manipulation active:scale-98"
+                      style={{ minHeight: '56px' }}
                     >
                       <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
                         <Download size={20} className="text-white" />
@@ -522,7 +525,7 @@ const PlanTab = () => {
               >
                 <button
                   onClick={() => toggleTodayStep(step.id)}
-                  className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                  className={`flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 cursor-pointer touch-manipulation active:scale-90 ${
                     step.completed
                       ? 'bg-green-500 border-green-500 text-white'
                       : 'border-gray-300 hover:border-yellow-gold'
@@ -560,7 +563,8 @@ const PlanTab = () => {
               />
               <button
                 onClick={addTodayStep}
-                className="bg-yellow-gold hover:bg-yellow-gold/90 text-dark-teal px-4 py-2 rounded-lg transition-colors"
+                className="bg-yellow-gold hover:bg-yellow-gold/90 text-dark-teal px-4 py-2 rounded-lg transition-all cursor-pointer touch-manipulation active:scale-95"
+                style={{ minHeight: '44px', minWidth: '44px' }}
               >
                 <Plus size={16} />
               </button>
@@ -624,7 +628,7 @@ const PlanTab = () => {
               >
                 <button
                   onClick={() => toggleWeekStep(step.id)}
-                  className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                  className={`flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 cursor-pointer touch-manipulation active:scale-90 ${
                     step.completed
                       ? 'bg-green-500 border-green-500 text-white'
                       : 'border-gray-300 hover:border-dark-teal'

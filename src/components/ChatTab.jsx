@@ -22,6 +22,8 @@ if (isDevelopment && typeof window !== 'undefined') {
 const ChatTab = ({ userId }) => {
   const [messages, setMessages] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [showChatHistory, setShowChatHistory] = useState(false);
+  const [currentChatId, setCurrentChatId] = useState(null);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
@@ -333,8 +335,51 @@ const ChatTab = ({ userId }) => {
     handleSendMessage(text);
   };
 
+  const handleNewChat = () => {
+    setMessages([{
+      id: 'welcome-1',
+      text: "Hey there! 👋 I'm so excited to meet you! I'm your AI buddy who's here to chat, laugh, and support you through anything! Think of me as that friend who's always got your back and loves celebrating your wins - big or small! 🎉 How are you feeling today? What's going on in your world? ✨",
+      sender: 'ai',
+      timestamp: new Date(),
+    }]);
+    setCurrentChatId(null);
+    setShowChatHistory(false);
+  };
+
+  const hasPastChats = messages.length > 1 || (messages.length === 1 && messages[0].id !== 'welcome-1');
+
   return (
     <div className="flex flex-col h-full min-h-0 relative overflow-hidden bg-gradient-to-b from-white/80 to-indigo-50/80 backdrop-blur-sm">
+      {/* Chat Header with New Chat Button */}
+      {!isLoadingHistory && hasPastChats && (
+        <div className="px-4 pt-4 pb-2 flex-shrink-0 flex items-center justify-between">
+          <button
+            onClick={() => setShowChatHistory(!showChatHistory)}
+            className="px-3 py-2 rounded-lg bg-white/90 backdrop-blur-sm border border-white/50 hover:bg-white transition-colors text-sm font-medium text-gray-700 flex items-center space-x-2"
+          >
+            <span>💬</span>
+            <span>Past Chats</span>
+          </button>
+          <button
+            onClick={handleNewChat}
+            className="px-3 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 transition-all text-sm font-medium flex items-center space-x-2 shadow-md"
+          >
+            <span>✨</span>
+            <span>New Chat</span>
+          </button>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isLoadingHistory && (
+        <div className="px-4 pt-4 pb-2 flex-shrink-0 text-center">
+          <div className="inline-flex items-center space-x-2 text-gray-500 text-sm">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+            <span>Loading chat history...</span>
+          </div>
+        </div>
+      )}
+
       {/* Rate Limit Warning */}
       {isRateLimited && (
         <div className="mx-4 mt-4 p-4 bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 rounded-2xl flex-shrink-0 shadow-lg slide-up">
@@ -362,7 +407,8 @@ const ChatTab = ({ userId }) => {
         </div>
       )}
 
-      {/* Quick Start Buttons */}
+      {/* Quick Start Buttons - Only show when not loading and not showing chat history */}
+      {!isLoadingHistory && !showChatHistory && (
       <div className="px-4 lg:p-6 pb-3 flex-shrink-0">
         <h3 className="text-base font-bold mb-3 text-gray-800 flex items-center space-x-2">
           <span className="text-lg">🚀</span>
@@ -406,8 +452,54 @@ const ChatTab = ({ userId }) => {
           })}
         </div>
       </div>
+      )}
 
-      {/* Messages Area */}
+      {/* Chat History View */}
+      {showChatHistory && (
+        <div className="flex-1 overflow-y-auto px-4 pb-32">
+          <div className="max-w-2xl mx-auto py-4">
+            <h3 className="text-lg font-bold mb-4 text-gray-800">Your Chat History</h3>
+            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 mb-4">
+              <p className="text-sm text-gray-600 mb-4">
+                You have an ongoing conversation with {messages.length} messages. Would you like to continue or start fresh?
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setShowChatHistory(false);
+                    scrollToBottom();
+                  }}
+                  className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 transition-all text-sm font-medium"
+                >
+                  Continue Chat
+                </button>
+                <button
+                  onClick={handleNewChat}
+                  className="flex-1 px-4 py-2 rounded-lg bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all text-sm font-medium"
+                >
+                  Start New
+                </button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              {messages.slice(0, 10).map((msg, idx) => (
+                <div key={msg.id} className="bg-white/70 backdrop-blur-sm rounded-lg p-3 text-sm">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <span className="font-semibold">{msg.sender === 'user' ? 'You' : 'AI'}</span>
+                    <span className="text-xs text-gray-400">
+                      {msg.timestamp.toLocaleTimeString()}
+                    </span>
+                  </div>
+                  <p className="text-gray-700 line-clamp-2">{msg.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Messages Area - Only show when not showing chat history */}
+      {!showChatHistory && !isLoadingHistory && (
       <div className="flex-1 overflow-y-auto px-4 lg:p-6 space-y-4 min-h-0 pb-32">
         {messages.map((message, index) => (
           <div
@@ -491,6 +583,7 @@ const ChatTab = ({ userId }) => {
         )}
         <div ref={messagesEndRef} />
       </div>
+      )}
 
       {/* Input Area - Fixed at bottom with proper spacing */}
       <div className="fixed bottom-28 left-0 right-0 px-4 py-4 lg:sticky lg:bottom-0 lg:p-6 z-40">

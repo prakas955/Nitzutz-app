@@ -98,6 +98,7 @@ const EmergencyModal = ({ isOpen, onClose, detectionResult, userId }) => {
 
     // Cleanup
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const handleEmergencyCall = async () => {

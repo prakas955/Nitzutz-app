@@ -49,15 +49,17 @@ const GoalCard = ({ goal, progress, onEdit, onDelete, linkedActions = [] }) => {
           <div className="flex items-center space-x-1">
             <button
               onClick={() => onEdit(goal)}
-              className="p-1 text-gray-400 hover:text-blue-500 transition-colors"
+              className="p-2 text-gray-400 hover:text-blue-500 active:scale-90 transition-all cursor-pointer touch-manipulation"
               title="Edit goal"
+              style={{ minWidth: '36px', minHeight: '36px' }}
             >
               <Edit size={16} />
             </button>
             <button
               onClick={() => onDelete(goal)}
-              className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+              className="p-2 text-gray-400 hover:text-red-500 active:scale-90 transition-all cursor-pointer touch-manipulation"
               title="Delete goal"
+              style={{ minWidth: '36px', minHeight: '36px' }}
             >
               <Trash2 size={16} />
             </button>
