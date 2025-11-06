@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Check, Calendar, Clock, Target, Download, Edit, Trash2, Star, Filter, AlertCircle, FileText, FileDown } from 'lucide-react';
 import GoalCard from './GoalCard';
 import GoalForm from './GoalForm';
 import { exportPlanToPDF, exportPlanAsText } from '../utils/pdfExport';
 import { trackGoalCreation, trackPlanCreation, trackExport } from '../utils/analytics';
+import firestoreService from '../services/firestoreService';
 
 const PlanTab = () => {
   // Goals state with advanced features
@@ -62,6 +63,52 @@ const PlanTab = () => {
   // Filter and sort states
   const [goalFilter, setGoalFilter] = useState('all'); // all, high-priority, in-progress, completed
   const [goalSort, setGoalSort] = useState('created'); // created, progress, due-date, priority
+
+  // Load action plan from Firebase on mount
+  useEffect(() => {
+    const loadPlan = async () => {
+      try {
+        const savedPlan = await firestoreService.loadPlan();
+        if (savedPlan) {
+          if (savedPlan.goals) setGoals(savedPlan.goals);
+          if (savedPlan.todaySteps) setTodaySteps(savedPlan.todaySteps);
+          if (savedPlan.weekSteps) setWeekSteps(savedPlan.weekSteps);
+          console.log('✅ Loaded action plan from Firebase');
+        }
+      } catch (error) {
+        console.error('❌ Error loading plan:', error);
+      }
+    };
+
+    // Wait for Firebase auth to initialize
+    const timer = setTimeout(() => {
+      loadPlan();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Save plan to Firebase whenever it changes
+  useEffect(() => {
+    const savePlan = async () => {
+      try {
+        await firestoreService.savePlan({
+          goals,
+          todaySteps,
+          weekSteps
+        });
+      } catch (error) {
+        // Silent fail - don't block UI
+      }
+    };
+
+    // Debounce saves to avoid too many writes
+    const timer = setTimeout(() => {
+      savePlan();
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [goals, todaySteps, weekSteps]);
 
   // Helper function to calculate goal progress
   const calculateGoalProgress = (goalId) => {

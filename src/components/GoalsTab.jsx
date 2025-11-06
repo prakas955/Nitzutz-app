@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Target, Download, Calendar, Trash2 } from 'lucide-react';
 import GoalCard from './GoalCard';
 import GoalForm from './GoalForm';
+import firestoreService from '../services/firestoreService';
+import { trackGoalCreation } from '../utils/analytics';
 
 const GoalsTab = ({ userId }) => {
   // Goals state
@@ -24,6 +26,28 @@ const GoalsTab = ({ userId }) => {
 
   const [isGoalFormOpen, setIsGoalFormOpen] = useState(false);
 
+  // Load goals from Firebase on mount
+  useEffect(() => {
+    const loadGoals = async () => {
+      try {
+        const savedGoals = await firestoreService.loadGoals();
+        if (savedGoals && savedGoals.length > 0) {
+          setGoals(savedGoals);
+          console.log(`✅ Loaded ${savedGoals.length} goals from Firebase`);
+        }
+      } catch (error) {
+        console.error('❌ Error loading goals:', error);
+      }
+    };
+
+    // Wait for Firebase auth to initialize
+    const timer = setTimeout(() => {
+      loadGoals();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // Helper function to calculate goal progress (placeholder for now)
   const calculateGoalProgress = (goalId) => {
     // For now, return random progress. Later this will be calculated from linked actions
@@ -31,12 +55,29 @@ const GoalsTab = ({ userId }) => {
   };
 
   // Goal management functions
-  const addGoal = (newGoal) => {
+  const addGoal = async (newGoal) => {
     setGoals(prev => [...prev, newGoal]);
+    
+    // Save to Firebase
+    try {
+      await firestoreService.saveGoal(newGoal);
+      trackGoalCreation();
+      console.log('✅ Goal saved to Firebase');
+    } catch (error) {
+      console.error('❌ Error saving goal to Firebase:', error);
+    }
   };
 
-  const deleteGoal = (goalId) => {
+  const deleteGoal = async (goalId) => {
     setGoals(prev => prev.filter(goal => goal.id !== goalId));
+    
+    // Delete from Firebase
+    try {
+      await firestoreService.deleteGoal(goalId);
+      console.log('✅ Goal deleted from Firebase');
+    } catch (error) {
+      console.error('❌ Error deleting goal from Firebase:', error);
+    }
   };
 
   // Export function for goals

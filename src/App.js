@@ -10,6 +10,8 @@ import GoalsTab from './components/GoalsTab';
 import OnboardingFlow from './components/OnboardingFlow';
 import StatsModal from './components/StatsModal';
 import { trackSession } from './utils/analytics';
+import firebaseAuthService from './services/firebaseAuth';
+import firestoreService from './services/firestoreService';
 
 function App() {
   const [activeTab, setActiveTab] = useState('chat');
@@ -33,6 +35,22 @@ function App() {
     if (!onboardingComplete) {
       setShowOnboarding(true);
     }
+    
+    // Initialize Firebase authentication
+    const initFirebase = async () => {
+      try {
+        const user = await firebaseAuthService.initializeAuth();
+        if (user) {
+          firestoreService.setUserId(user.uid);
+          console.log('✅ Firebase authenticated with anonymous user:', user.uid);
+        }
+      } catch (error) {
+        console.error('❌ Firebase auth failed:', error);
+        console.warn('⚠️ App will work without Firebase (using localStorage)');
+      }
+    };
+    
+    initFirebase();
     
     // Track session start
     trackSession();

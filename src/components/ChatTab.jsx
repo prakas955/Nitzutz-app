@@ -6,6 +6,7 @@ import EmergencyModal from './EmergencyModal';
 import AchievementToast from './AchievementToast';
 import DailyMotivation from './DailyMotivation';
 import { trackChatMessage } from '../utils/analytics';
+import firestoreService from '../services/firestoreService';
 
 // Development mode testing (remove in production)
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -72,6 +73,46 @@ const ChatTab = ({ userId }) => {
       return () => clearTimeout(timer);
     }
   }, []);
+
+  // Load chat history from Firebase on mount
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      try {
+        const savedMessages = await firestoreService.loadChatMessages();
+        if (savedMessages && savedMessages.length > 0) {
+          // Convert saved messages to component format
+          const formattedMessages = savedMessages.map(msg => ({
+            id: msg.id,
+            text: msg.text,
+            sender: msg.sender,
+            timestamp: msg.createdAt ? new Date(msg.createdAt) : new Date()
+          }));
+          setMessages(formattedMessages);
+          console.log(`✅ Loaded ${savedMessages.length} messages from Firebase`);
+        }
+      } catch (error) {
+        console.error('❌ Error loading chat history:', error);
+        console.log('ℹ️ Starting with welcome message');
+      }
+    };
+
+    // Wait a moment for Firebase auth to initialize
+    const timer = setTimeout(() => {
+      loadChatHistory();
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Save new messages to Firebase
+  const saveMessageToFirebase = async (message, sender) => {
+    try {
+      await firestoreService.saveChatMessage(message, sender);
+    } catch (error) {
+      console.error('❌ Error saving message to Firebase:', error);
+      // Don't block the UI if Firebase fails
+    }
+  };
 
   // Achievement detection
   const detectAchievement = (message) => {
@@ -218,6 +259,9 @@ const ChatTab = ({ userId }) => {
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setIsTyping(true);
+    
+    // Save user message to Firebase
+    saveMessageToFirebase(messageText, 'user');
 
     try {
       // Build conversation history from current messages + new user message
@@ -239,27 +283,35 @@ const ChatTab = ({ userId }) => {
       }
       
       const aiMessageId = `ai-${Date.now()}`;
+      const aiResponseTextFinal = aiResponseText || "I apologize, but I didn't receive a proper response. Please try again.";
       const aiResponse = {
         id: aiMessageId,
-        text: aiResponseText || "I apologize, but I didn't receive a proper response. Please try again.",
+        text: aiResponseTextFinal,
         sender: 'ai',
         timestamp: new Date(),
       };
       
       setMessages(prev => [...prev, aiResponse]);
+      
+      // Save AI response to Firebase
+      saveMessageToFirebase(aiResponseTextFinal, 'ai');
     } catch (error) {
       console.error('Error in handleSendMessage:', error);
       
       // Fallback response on error
       const aiMessageId = `ai-error-${Date.now()}`;
+      const fallbackText = "I'm having trouble connecting right now, but I want you to know that I'm here for you. Sometimes technical issues happen, but your feelings and experiences are always valid. Is there anything specific you'd like to talk about?";
       const aiResponse = {
         id: aiMessageId,
-        text: "I'm having trouble connecting right now, but I want you to know that I'm here for you. Sometimes technical issues happen, but your feelings and experiences are always valid. Is there anything specific you'd like to talk about?",
+        text: fallbackText,
         sender: 'ai',
         timestamp: new Date(),
       };
       
       setMessages(prev => [...prev, aiResponse]);
+      
+      // Save fallback response to Firebase
+      saveMessageToFirebase(fallbackText, 'ai');
     } finally {
       setIsTyping(false);
     }
