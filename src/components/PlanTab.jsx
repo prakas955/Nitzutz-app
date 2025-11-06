@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Check, Calendar, Clock, Target, Download, Edit, Trash2, Star, Filter, AlertCircle, FileText, FileDown } from 'lucide-react';
+import { Plus, Check, Calendar, Clock, Target, Download, Star, Filter, AlertCircle, FileText, FileDown } from 'lucide-react';
 import GoalCard from './GoalCard';
 import GoalForm from './GoalForm';
 import { exportPlanToPDF, exportPlanAsText } from '../utils/pdfExport';
-import { trackGoalCreation, trackPlanCreation, trackExport } from '../utils/analytics';
+import { trackExport } from '../utils/analytics';
 import firestoreService from '../services/firestoreService';
 
 const PlanTab = () => {
@@ -297,7 +297,7 @@ const PlanTab = () => {
   const weekCompletionRate = weekSteps.length > 0 ? (weekSteps.filter(step => step.completed).length / weekSteps.length) * 100 : 0;
 
   return (
-    <div className="p-4 pb-24" style={{ backgroundColor: '#f7be4b', minHeight: '100vh' }}>
+    <div className="p-4 pb-32 overflow-y-auto" style={{ backgroundColor: '#f7be4b', minHeight: '100vh' }}>
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">

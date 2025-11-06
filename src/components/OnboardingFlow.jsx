@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, Shield, Heart, Phone, CheckCircle, ArrowRight, Sparkles } from 'lucide-react';
+import { MessageSquare, Shield, Phone, CheckCircle, ArrowRight, Sparkles } from 'lucide-react';
 
 const OnboardingFlow = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);

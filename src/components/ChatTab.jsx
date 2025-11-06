@@ -20,14 +20,8 @@ if (isDevelopment && typeof window !== 'undefined') {
 }
 
 const ChatTab = ({ userId }) => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      text: "Hey there! 👋 I'm so excited to meet you! I'm your AI buddy who's here to chat, laugh, and support you through anything! Think of me as that friend who's always got your back and loves celebrating your wins - big or small! 🎉 How are you feeling today? What's going on in your world? ✨",
-      sender: 'ai',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
@@ -77,8 +71,14 @@ const ChatTab = ({ userId }) => {
   // Load chat history from Firebase on mount
   useEffect(() => {
     const loadChatHistory = async () => {
+      setIsLoadingHistory(true);
+      
       try {
+        // Wait for Firebase auth to be ready
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
         const savedMessages = await firestoreService.loadChatMessages();
+        
         if (savedMessages && savedMessages.length > 0) {
           // Convert saved messages to component format
           const formattedMessages = savedMessages.map(msg => ({
@@ -89,19 +89,31 @@ const ChatTab = ({ userId }) => {
           }));
           setMessages(formattedMessages);
           console.log(`✅ Loaded ${savedMessages.length} messages from Firebase`);
+        } else {
+          // No saved messages, show welcome message
+          setMessages([{
+            id: 'welcome-1',
+            text: "Hey there! 👋 I'm so excited to meet you! I'm your AI buddy who's here to chat, laugh, and support you through anything! Think of me as that friend who's always got your back and loves celebrating your wins - big or small! 🎉 How are you feeling today? What's going on in your world? ✨",
+            sender: 'ai',
+            timestamp: new Date(),
+          }]);
+          console.log('ℹ️ No saved chats, showing welcome message');
         }
       } catch (error) {
         console.error('❌ Error loading chat history:', error);
-        console.log('ℹ️ Starting with welcome message');
+        // Show welcome message on error
+        setMessages([{
+          id: 'welcome-1',
+          text: "Hey there! 👋 I'm so excited to meet you! I'm your AI buddy who's here to chat, laugh, and support you through anything! Think of me as that friend who's always got your back and loves celebrating your wins - big or small! 🎉 How are you feeling today? What's going on in your world? ✨",
+          sender: 'ai',
+          timestamp: new Date(),
+        }]);
+      } finally {
+        setIsLoadingHistory(false);
       }
     };
 
-    // Wait a moment for Firebase auth to initialize
-    const timer = setTimeout(() => {
-      loadChatHistory();
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    loadChatHistory();
   }, []);
 
   // Save new messages to Firebase
@@ -351,12 +363,12 @@ const ChatTab = ({ userId }) => {
       )}
 
       {/* Quick Start Buttons */}
-      <div className="px-4 lg:p-6 pb-4 flex-shrink-0">
-        <h3 className="text-lg font-bold mb-6 text-gray-800 flex items-center space-x-2">
-          <span className="text-xl">🚀</span>
-          <span>Let's Get Started!</span>
+      <div className="px-4 lg:p-6 pb-3 flex-shrink-0">
+        <h3 className="text-base font-bold mb-3 text-gray-800 flex items-center space-x-2">
+          <span className="text-lg">🚀</span>
+          <span>Quick Start</span>
         </h3>
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-2 gap-2">
           {quickStartButtons.map((button, index) => {
             const icons = ['😰', '😟', '😴', '💭', '😓', '😔', '😄', '🎯', '🌟', '🚀'];
             const gradients = [
@@ -376,23 +388,17 @@ const ChatTab = ({ userId }) => {
               <button
                 key={index}
                 onClick={() => handleQuickStart(button)}
-                className="group text-left p-5 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl active:scale-95 bg-white/90 backdrop-blur-sm border border-white/50 hover:border-white/80 slide-up"
-                style={{ animationDelay: `${index * 100}ms` }}
+                className="group text-left p-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 bg-white/90 backdrop-blur-sm border border-white/50 hover:border-white/80 slide-up"
+                style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="flex items-center space-x-4">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${gradients[index]} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
-                    <span className="text-xl">{icons[index]}</span>
+                <div className="flex items-center space-x-2">
+                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${gradients[index]} flex items-center justify-center shadow-md flex-shrink-0`}>
+                    <span className="text-base">{icons[index]}</span>
                   </div>
-                  <div className="flex-1">
-                    <span className="text-gray-800 font-semibold text-base group-hover:text-gray-900 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <span className="text-gray-800 font-medium text-xs group-hover:text-gray-900 transition-colors block truncate">
                       {button}
                     </span>
-                    <div className="w-0 group-hover:w-full h-0.5 bg-gradient-to-r from-blue-400 to-purple-500 transition-all duration-300 mt-1"></div>
-                  </div>
-                  <div className="text-gray-400 group-hover:text-gray-600 transition-colors">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
                   </div>
                 </div>
               </button>
@@ -402,7 +408,7 @@ const ChatTab = ({ userId }) => {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 lg:p-6 space-y-4 min-h-0 pb-56">
+      <div className="flex-1 overflow-y-auto px-4 lg:p-6 space-y-4 min-h-0 pb-32">
         {messages.map((message, index) => (
           <div
             key={message.id}

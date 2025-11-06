@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, MessageSquare, X, AlertTriangle, Heart, Shield } from 'lucide-react';
+import { Phone, MessageSquare, X, Heart, Shield } from 'lucide-react';
 import emergencyLogger from '../services/emergencyLogger';
 import SafetyPlanBuilder from './SafetyPlanBuilder';
 

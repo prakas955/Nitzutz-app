@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Phone, Users, Calendar, CheckCircle, Plus, X } from 'lucide-react';
+import { Heart, Users, Calendar, CheckCircle, Plus, X } from 'lucide-react';
 
 const SafetyPlanBuilder = ({ isOpen, onClose, userId, detectionResult }) => {
   const [currentStep, setCurrentStep] = useState(0);
