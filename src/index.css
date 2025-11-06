@@ -106,3 +106,16 @@ body {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* Chat input positioning - mobile fixed, desktop sticky with bottom nav */
+.chat-input-mobile {
+  position: fixed;
+  bottom: 7rem;
+}
+
+@media (min-width: 1024px) {
+  .chat-input-mobile {
+    position: fixed;
+    bottom: 6rem; /* Account for bottom navigation on desktop */
+  }
+}

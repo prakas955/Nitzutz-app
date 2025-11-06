@@ -3,7 +3,7 @@
  * Tests emergency detection and response across different platforms
  */
 
-import { detectEmergency, testEmergencyDetection } from './emergencyDetection';
+import { detectEmergency } from './emergencyDetection';
 import emergencyLogger from '../services/emergencyLogger';
 
 class EmergencyTester {
@@ -134,7 +134,6 @@ class EmergencyTester {
     
     // Test tel: protocol support
     try {
-      const testNumber = 'tel:000';
       const canUseTel = true; // We can't actually test this without triggering
       tests.push({
         feature: 'tel_protocol',

@@ -23,7 +23,6 @@ const ChatTab = ({ userId }) => {
   const [messages, setMessages] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [showChatHistory, setShowChatHistory] = useState(false);
-  const [currentChatId, setCurrentChatId] = useState(null);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
@@ -47,12 +46,14 @@ const ChatTab = ({ userId }) => {
   ];
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, 100);
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping]);
 
   // Show daily motivation on first visit
   useEffect(() => {
@@ -342,7 +343,6 @@ const ChatTab = ({ userId }) => {
       sender: 'ai',
       timestamp: new Date(),
     }]);
-    setCurrentChatId(null);
     setShowChatHistory(false);
   };
 
@@ -500,7 +500,13 @@ const ChatTab = ({ userId }) => {
 
       {/* Messages Area - Only show when not showing chat history */}
       {!showChatHistory && !isLoadingHistory && (
-      <div className="flex-1 overflow-y-auto px-4 lg:p-6 space-y-4 min-h-0 pb-32">
+      <div 
+        className="flex-1 overflow-y-auto px-4 lg:p-6 space-y-4 min-h-0 pb-48"
+        style={{
+          touchAction: 'pan-y',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
         {messages.map((message, index) => (
           <div
             key={message.id}
@@ -581,12 +587,12 @@ const ChatTab = ({ userId }) => {
             </div>
           </div>
         )}
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} style={{ height: '1px', minHeight: '1px' }} />
       </div>
       )}
 
-      {/* Input Area - Fixed at bottom with proper spacing */}
-      <div className="fixed bottom-28 left-0 right-0 px-4 py-4 lg:sticky lg:bottom-0 lg:p-6 z-40">
+      {/* Input Area - Fixed at bottom on mobile, sticky on desktop */}
+      <div className="chat-input-mobile left-0 right-0 px-4 py-3 lg:px-6 lg:py-6 z-40 safe-area-bottom">
         <div className="max-w-4xl mx-auto">
           {/* Glass morphism container */}
           <div className="glass rounded-3xl p-4 shadow-2xl">

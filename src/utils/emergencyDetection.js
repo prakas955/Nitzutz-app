@@ -91,7 +91,7 @@ const FUZZY_PATTERNS = [
   { pattern: /want\s+t[o0]\s+d[i1][e3]/gi, risk: 'high' },
   { pattern: /b[e3]tt[e3]r\s+[o0]ff\s+d[e3][a@]d/gi, risk: 'high' },
   { pattern: /n[o0]t\s+w[o0]rth\s+l[i1]v[i1]ng/gi, risk: 'high' },
-  { pattern: /c[a@]n[\'t]*\s+g[o0]\s+[o0]n/gi, risk: 'medium' },
+  { pattern: /c[a@]n['t]*\s+g[o0]\s+[o0]n/gi, risk: 'medium' },
   { pattern: /h[u0]rt\s+m[y3]?\s*s[e3]lf/gi, risk: 'high' },
   { pattern: /[o0]v[e3]rd[o0]s[e3]/gi, risk: 'high' },
   { pattern: /g[i1]v[e3]\s+[u0]p/gi, risk: 'medium' },

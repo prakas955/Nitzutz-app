@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const DailyMotivation = ({ onClose }) => {
-  const [currentMotivation, setCurrentMotivation] = useState(null);
-
-  const dailyMotivations = [
+const dailyMotivations = [
     {
       emoji: "🌟",
       title: "You're a Star!",
@@ -40,6 +37,9 @@ const DailyMotivation = ({ onClose }) => {
       message: "Your unique story, experiences, and perspective make you absolutely incredible! Own your awesomeness! 👑"
     }
   ];
+
+const DailyMotivation = ({ onClose }) => {
+  const [currentMotivation, setCurrentMotivation] = useState(null);
 
   useEffect(() => {
     // Get a different motivation based on the day

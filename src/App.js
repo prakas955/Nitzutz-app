@@ -89,53 +89,21 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Header */}
       <Header onCrisisClick={handleCrisisClick} onStatsClick={() => setShowStatsModal(true)} />
       
-      {/* Desktop Sidebar Navigation - Hidden on Mobile */}
-      <div className="hidden lg:flex lg:flex-col lg:w-80 lg:min-h-screen">
-        <div className="p-6 glass rounded-r-3xl m-2 mr-0">
-          <h2 className="text-xl font-bold mb-6 text-gray-800">Navigation</h2>
-          <nav className="space-y-3">
-            {[
-              { id: 'chat', label: 'AI Chat Companion', icon: '💬', gradient: 'from-blue-400 to-blue-600' },
-              { id: 'resources', label: 'NSW Resources', icon: '📚', gradient: 'from-green-400 to-green-600' },
-              { id: 'goals', label: 'My Goals', icon: '🎯', gradient: 'from-purple-400 to-purple-600' },
-              { id: 'plan', label: 'My Action Plan', icon: '📋', gradient: 'from-orange-400 to-orange-600' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center space-x-4 transform hover:scale-105 hover:shadow-lg group ${
-                  activeTab === tab.id 
-                    ? `bg-gradient-to-r ${tab.gradient} text-white shadow-xl scale-105` 
-                    : 'bg-white/70 text-gray-700 hover:bg-white/90 shadow-md'
-                }`}
-              >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                  activeTab === tab.id ? 'bg-white/20' : 'bg-gray-100'
-                }`}>
-                  <span className="text-lg">{tab.icon}</span>
-                </div>
-                <span className="font-semibold">{tab.label}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-      
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-0">
-        <div className="flex-1 lg:max-w-4xl lg:mx-auto w-full">
+        <div className="flex-1 w-full max-w-4xl mx-auto">
           <div className="fade-in">
             {renderActiveTab()}
           </div>
         </div>
       </main>
       
-      {/* Bottom Navigation - Mobile Only */}
-      <div className="lg:hidden">
+      {/* Bottom Navigation - Shown on Both Mobile and Desktop */}
+      <div>
         <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
       

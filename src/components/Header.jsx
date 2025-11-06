@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart3, Wifi, WifiOff } from 'lucide-react';
 import Logo from './Logo';
-import firebaseAuthService from '../services/firebaseAuth';
 import { auth } from '../config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
